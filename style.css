@@ -1,0 +1,86 @@
+*{
+  box-sizing: border-box;
+}
+*::before, *::after {
+  box-sizing: border-box;
+}
+
+body{
+  background-color: #f2f2f2;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  margin: 0;
+  padding: 0;
+
+  height:100vh;
+  width: 100vw;
+}
+
+
+textarea{
+  width:100%;
+  height:100%;
+  background:#333;
+  box-shadow: 0 0 2px rgba(255, 255, 255, .3);
+  border:0;
+  color:#fff;
+  font-family: 'Open Sans', sans-serif;
+}
+
+iframe{
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+  
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  height: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 6px 1fr;
+  grid-template-rows: 1fr 6px 1fr;
+  height: 100%;
+}
+
+
+.vertical-gutter {
+  grid-area: 1 / 2 / 4 / 2;
+    border: solid 1px #fff
+}
+
+.horizontal-gutter {
+  grid-area: 2 / 1 / 2 / 4;
+  border: solid 1px #fff;
+}
+
+#js{
+  background-image: url('/assets/js.svg');
+  background-repeat: no-repeat;
+  background-size: 36px;
+  background-position: 96% 96%;
+}
+
+#css{
+  background-image: url('/assets/css.svg');
+  background-repeat: no-repeat;
+  background-size: 36px;
+  background-position: 96% 96%;
+}
+
+#html{
+  background-image: url('/assets/html5.svg');
+  background-repeat: no-repeat;
+  background-size: 36px;
+  background-position: 96% 96%;
+}
+
