@@ -12,17 +12,11 @@
   <body>
     <div id="app">
         <div class="grid">
-          <div>
-            <textarea name="" id="html"></textarea>
-          </div>
-          <div>
-            <textarea name="" id="js"></textarea>
-          </div>
-          <div>
-            <textarea name="" id="css"></textarea>
-          </div>
-          <div>
-            <iframe srcdoc="<h3>Result</h3>"></iframe>
+          <div class="editor" id="html"></div>
+          <div class="editor" id="js"></div>
+          <div class="editor" id="css"></div>
+        <div>
+            <iframe srcdoc=""></iframe>
           </div>
           <div class="horizontal-gutter"></div>
           <div class="vertical-gutter"></div>
@@ -41,6 +35,8 @@
 
   console.log(document.querySelector('h1'))
   console.log(document.querySelector('h2'))
+
+  document.querySelector('h2').style.color = 'blue'
 
   h1{
     color:red;

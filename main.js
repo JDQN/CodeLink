@@ -2,6 +2,22 @@ import './style.css'
 import Split from 'split-grid'
 import { encode, decode } from 'js-base64';
 
+import * as monaco from 'monaco-editor';
+
+import HtmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
+import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+import JsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+
+
+
+window.MonacoEnvironment = {
+   getWorker(_, label){
+      if (label === 'html') return new HtmlWorker()
+      if (label === 'css') return new CssWorker()
+      if (label === 'javascript') return new JsWorker()
+   }
+}
+
 
 const $ = selector => document.querySelector(selector);
 Split({
@@ -15,49 +31,68 @@ Split({
    }]
 })
 
-
-
 const $html = $('#html')
 const $js = $('#js')
 const $css = $('#css')
 
+const { pathname } = window.location
 
-$html.addEventListener('input', update)
-$js.addEventListener('input', update)
-$css.addEventListener('input', update)
+const [ rawHtml, rawCss, rawJs ] = pathname.slice(1).split('/&7C')
+
+const html = rawHtml ? decode(rawHtml) : ''
+const css = rawCss ? decode(rawCss) : ''
+const js = rawJs ? decode(rawJs) : ''
 
 
-function init() {
-   const { pathname } = window.location
-
-   const [ rawHtml, rawCss, rawJs ] = pathname.slice(1).split('/&7C')
-
-   const html = encode(rawHtml)
-   const css = encode(rawCss)
-   const js = encode(rawJs)
-
-   $html.value = html
-   $css.value = css
-   $js.value = js
+const COMMON_EDITOR_OPTIONS = {
+   automaticLayout: true,
+   fontSize: 19,
+   theme: 'vs-dark',
 }
+
+const htmlEditor = monaco.editor.create($html, {
+   value: html,
+   language: 'html',
+   ...COMMON_EDITOR_OPTIONS
+})
+
+const cssEditor = monaco.editor.create($css, {
+   value: css,
+   language: 'css',
+   ...COMMON_EDITOR_OPTIONS
+})
+
+const jsEditor = monaco.editor.create($js, {
+   value: js,
+   language: 'javascript',
+   ...COMMON_EDITOR_OPTIONS
+})
+
+
+htmlEditor.onDidChangeModelContent(update)
+cssEditor.onDidChangeModelContent(update)
+jsEditor.onDidChangeModelContent(update)
+
+const htmlForPreview = createHtml({html, js, css})
+   $('iframe').setAttribute('srcdoc', htmlForPreview)
 
 
 function update (){
-   const html = $html.value
-   const js = $js.value
-   const css = $css.value
+   const html = htmlEditor.getValue()
+   const css = cssEditor.getValue()
+   const js = jsEditor.getValue()
 
-   const hashedCode = `${encode(html)}|${encode(js)}|${encode(css)}`
+   const hashedCode = `${encode(html)}|${encode(css)}|${encode(js)}`
+   console.log(hashedCode)
 
    window.history.replaceState(null, null, `/${hashedCode}`)
    
-
    const htmlForPreview = createHtml({html, js, css})
    $('iframe').setAttribute('srcdoc', htmlForPreview)
 }
 
 
-const createHtml = ({html, js, css}) => {
+function createHtml ({html, js, css}){
    
    return `
       <!DOCTYPE html>
@@ -77,4 +112,21 @@ const createHtml = ({html, js, css}) => {
    `
 }
 
-init()
+/*
+   ENCODE Y DECODE son de la libreria base 64 de js la cual nos permite codificar 
+   y decodificar un string en base 64 de js
+
+   Split es una libreria que nos permite dividir un elemento en 2 partes 
+   vertical y horizontal es el encargado de hacer la divicion de la pantalla
+
+   La libreria Monaco editor nos perimite crear un editor de codigo
+   en este caso el editor de html, css y js 
+
+   onDidChangeModelContent es un evento que se dispara cuando el contenido del editor cambia
+   update es una funcion que actualiza el contenido del iframe
+
+   function update () es una funcion que actualiza el contenido del iframe
+   createHtml es una funcion que crea el html para el iframe
+   htmlForPreview es el html que se va a mostrar en el iframe
+
+*/
