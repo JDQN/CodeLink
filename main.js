@@ -1,9 +1,11 @@
 import './style.css'
-import Split from 'split-grid'
+import Split from 'split-grid';
 import { encode, decode } from 'js-base64';
 
-import * as monaco from 'monaco-editor';
+import { expect } from 'chai'
 
+
+import * as monaco from 'monaco-editor';
 import HtmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import JsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
@@ -19,7 +21,9 @@ window.MonacoEnvironment = {
 }
 
 
+
 const $ = selector => document.querySelector(selector);
+
 Split({
       columnGutters: [{
       track: 1,
@@ -31,13 +35,13 @@ Split({
    }]
 })
 
-const $html = $('#html')
 const $js = $('#js')
 const $css = $('#css')
+const $html = $('#html')
 
-const { pathname } = window.location
+const { pathname } = window.location 
 
-const [ rawHtml, rawCss, rawJs ] = pathname.slice(1).split('/&7C')
+const [ rawHtml, rawCss, rawJs ] = pathname.slice(1).split('%7C')
 
 const html = rawHtml ? decode(rawHtml) : ''
 const css = rawCss ? decode(rawCss) : ''
@@ -47,8 +51,19 @@ const js = rawJs ? decode(rawJs) : ''
 const COMMON_EDITOR_OPTIONS = {
    automaticLayout: true,
    fontSize: 19,
-   theme: 'vs-dark',
+   fixedOverride: true,
+   scrollBeyondLastLine: false,
+   roundedSelection: false,
+   padding:{
+      top: 16
+   },
+   lineNumbers: 'off',
+   minimap: {
+      enabled: false
+   },
+   theme: 'vs-dark'
 }
+
 
 const htmlEditor = monaco.editor.create($html, {
    value: html,
@@ -77,6 +92,7 @@ const htmlForPreview = createHtml({html, js, css})
    $('iframe').setAttribute('srcdoc', htmlForPreview)
 
 
+
 function update (){
    const html = htmlEditor.getValue()
    const css = cssEditor.getValue()
@@ -90,6 +106,12 @@ function update (){
    const htmlForPreview = createHtml({html, js, css})
    $('iframe').setAttribute('srcdoc', htmlForPreview)
 }
+
+describe('htmlForPreview', () => {
+   it('should have a main.js', () => {
+      expect(htmlForPreview(1)).toBe(true)
+   })
+})
 
 
 function createHtml ({html, js, css}){
@@ -128,5 +150,10 @@ function createHtml ({html, js, css}){
    function update () es una funcion que actualiza el contenido del iframe
    createHtml es una funcion que crea el html para el iframe
    htmlForPreview es el html que se va a mostrar en el iframe
+
+   Los workers se encargan de ejecutar el codigo de javascript 
+   es basicamente poder ejecutar en otro hilos el codigo de js
+   lo que ase es recuperar menajes como eventos de los hilos de javascript
+   *https://developer.mozilla.org/es/docs/Web/API/Web_Workers_API/Using_web_workers
 
 */
